@@ -1,0 +1,72 @@
+# ЛИШЕ ДЛЯ ЛОКАЛЬНОГО ЗАПУСКУ: пароль 'password' не використовується в AWS.
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: lab6-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  warehouse:
+    build:
+      context: .
+      dockerfile: warehouse/Dockerfile
+    container_name: lab6-warehouse
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - DB_NAME=warehouse
+      - NAIVE_MODE=${NAIVE_MODE:-false}
+    depends_on:
+      - mysql
+
+  bank:
+    build:
+      context: .
+      dockerfile: bank/Dockerfile
+    container_name: lab6-bank
+    restart: always
+    ports:
+      - "8082:8082"
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - DB_NAME=bank
+    depends_on:
+      - mysql
+
+  shop:
+    build:
+      context: .
+      dockerfile: shop/Dockerfile
+    container_name: lab6-shop
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - DB_NAME=shop
+      - WAREHOUSE_URL=http://warehouse:8081
+      - BANK_URL=http://bank:8082
+      - DECISION_DELAY=${DECISION_DELAY:-0}
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - mysql
+      - warehouse
+      - bank
+
+volumes:
+  mysql-data:

@@ -1,0 +1,31 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+
+# Secrets & Keys
+*.pem
+*.key
+.env
+aws_credentials
+credentials
+
+# Terraform variable/plan files (можуть містити секрети)
+*.tfvars
+*.tfvars.json
+*.tfplan
+tfplan
+
+# Локальні логи e2e-тесту
+tests/e2e_*.log
+
+**/temp/**
